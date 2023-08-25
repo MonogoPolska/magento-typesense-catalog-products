@@ -1,0 +1,45 @@
+<?xml version="1.0" ?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
+    <system>
+        <tab id="typesense" translate="label, comment" sortOrder="9000" class="typesense-tab">
+            <label>Typesense</label>
+        </tab>
+        <section id="typesense_products" sortOrder="10" showInWebsite="1" showInStore="1" showInDefault="1"
+                 translate="label">
+            <label>Catalog Products</label>
+            <tab>typesense</tab>
+            <resource>Monogo_Typesense::config</resource>
+            <group id="settings" sortOrder="10" showInWebsite="1" showInStore="1" showInDefault="1" translate="label">
+                <label>Settings</label>
+                <field id="enabled" type="select" sortOrder="10" showInWebsite="1" showInStore="1" showInDefault="1"
+                       translate="label">
+                    <label>Enabled</label>
+                    <comment>Enable Products indexation</comment>
+                    <source_model>Magento\Config\Model\Config\Source\Enabledisable</source_model>
+                </field>
+                <field id="index_all" type="select" sortOrder="20" showInWebsite="1" showInStore="1"
+                       showInDefault="1"
+                       translate="label">
+                    <label>Index child products</label>
+                    <comment>Index all products (active, inactive, visible, not visible). This indexer can take long time. It should be used only, if you are consuming indexed data in catalog categories and API queries
+                    </comment>
+                    <source_model>Magento\Config\Model\Config\Source\YesNo</source_model>
+                </field>
+                <field id="schema" translate="label comment" type="text" sortOrder="100" showInDefault="1"
+                       showInWebsite="1" showInStore="1">
+                    <label>Index schema</label>
+                    <frontend_model>Monogo\TypesenseCatalogProducts\Model\Config\Source\Schema</frontend_model>
+                    <backend_model>Monogo\TypesenseCatalogProducts\Model\Config\Backend\Schema</backend_model>
+                    <comment>
+                        <![CDATA[
+                        If not configured, default schema will be applied. <br />
+                           Read more about
+                                <a href="https://typesense.org/docs/0.25.0/api/collections.html#schema-parameters" target="_blank">schema parameters</a>.
+                        ]]>
+                    </comment>
+                </field>
+            </group>
+        </section>
+    </system>
+</config>

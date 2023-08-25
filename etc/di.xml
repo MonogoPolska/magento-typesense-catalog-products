@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+
+    <type name="Monogo\TypesenseCore\Model\Indexer\RegisteredIndexers">
+        <arguments>
+            <argument name="additionalData" xsi:type="array">
+                <item name="_products" xsi:type="string">Products</item>
+                <item name="_products_children" xsi:type="string">Children products</item>
+            </argument>
+        </arguments>
+    </type>
+    <type name="Monogo\TypesenseCore\Model\Config\Source\Sections">
+        <arguments>
+            <argument name="additionalData" xsi:type="array">
+                <item name="products" xsi:type="string">Products</item>
+            </argument>
+        </arguments>
+    </type>
+    <type name="Monogo\TypesenseCore\Model\Job">
+        <arguments>
+            <argument name="additionalData" xsi:type="array">
+                <item name="product_ids" xsi:type="string">product_ids</item>
+            </argument>
+        </arguments>
+    </type>
+
+    <type name="Magento\Catalog\Model\ResourceModel\Product">
+        <plugin name="typesenseProducts" type="Monogo\TypesenseCatalogProducts\Plugin\ProductPlugin"/>
+    </type>
+
+    <type name="Magento\CatalogGraphQl\Model\Resolver\Product\Price\ProviderPool">
+        <arguments>
+            <argument name="providers" xsi:type="array">
+                <item name="configurable" xsi:type="object">Magento\ConfigurableProductGraphQl\Model\Resolver\Product\Price\Provider</item>
+                <item name="bundle" xsi:type="object">Magento\BundleGraphQl\Model\Resolver\Product\Price\Provider</item>
+                <item name="default" xsi:type="object">Magento\CatalogGraphQl\Model\Resolver\Product\Price\Provider</item>
+                <item name="grouped" xsi:type="object">Magento\GroupedProductGraphQl\Model\Resolver\Product\Price\Provider</item>
+            </argument>
+        </arguments>
+    </type>
+
+    <preference for="Magento\GraphQl\Model\Query\ContextInterface" type="Magento\GraphQl\Model\Query\Context" />
+    <preference for="Magento\GraphQl\Model\Query\ContextExtensionInterface" type="Magento\GraphQl\Model\Query\ContextExtension" />
+</config>
