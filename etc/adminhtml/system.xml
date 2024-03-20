@@ -22,9 +22,8 @@
                        showInDefault="1"
                        translate="label">
                     <label>Index child products</label>
-                    <comment>Index all products (active, inactive, visible, not visible). This indexer can take long time. It should be used only, if you are consuming indexed data in catalog categories and API queries
-                    </comment>
-                    <source_model>Magento\Config\Model\Config\Source\YesNo</source_model>
+                    <comment>Index all products (active, inactive, visible, not visible). This indexer can take long time. It should be used only, if you are consuming indexed data in catalog categories and API queries</comment>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
                 <field id="schema" translate="label comment" type="text" sortOrder="100" showInDefault="1"
                        showInWebsite="1" showInStore="1">
