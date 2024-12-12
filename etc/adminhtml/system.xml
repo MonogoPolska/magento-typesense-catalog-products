@@ -23,7 +23,7 @@
                        translate="label">
                     <label>Index child products</label>
                     <comment>Index all products (active, inactive, visible, not visible). This indexer can take long time. It should be used only, if you are consuming indexed data in catalog categories and API queries</comment>
-                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <source_model>Magento\Config\Model\Config\Source\YesNo</source_model>
                 </field>
                 <field id="schema" translate="label comment" type="text" sortOrder="100" showInDefault="1"
                        showInWebsite="1" showInStore="1">
@@ -37,6 +37,44 @@
                                 <a href="https://typesense.org/docs/0.25.0/api/collections.html#schema-parameters" target="_blank">schema parameters</a>.
                         ]]>
                     </comment>
+                </field>
+            </group>
+            <group id="embeddings" sortOrder="20" showInWebsite="1" showInStore="1" showInDefault="1" translate="label">
+                <label>Embeddings</label>
+                <field id="enable_embeddings" type="select" sortOrder="200" showInWebsite="1" showInStore="1" showInDefault="1"
+                       translate="label">
+                    <label>Enable Embeddings</label>
+                    <comment>
+                        <![CDATA[
+                        Enable Embeddings in schema <br />
+                        If embeddings are enabled, indexation time will be increased. <br />
+                        <a href="https://typesense.org/docs/27.0/api/vector-search.html#index-embeddings" target="_blank">Docs</a>
+                        ]]>
+                    </comment>
+                    <source_model>Magento\Config\Model\Config\Source\Enabledisable</source_model>
+                </field>
+                <field id="enable_embeddings_children" type="select" sortOrder="205" showInWebsite="1" showInStore="1" showInDefault="1"
+                       translate="label">
+                    <label>Allow Embeddings in children products</label>
+                    <source_model>Magento\Config\Model\Config\Source\Enabledisable</source_model>
+                </field>
+                <field id="embeddings_model_name" type="text" sortOrder="210" showInWebsite="1" showInStore="1" showInDefault="1"
+                       translate="label">
+                    <label>Model Name</label>
+                    <comment>Embedded model name</comment>
+                </field>
+                <field id="embeddings_api_key" type="obscure" sortOrder="220" showInWebsite="1" showInStore="1" showInDefault="1"
+                       translate="label">
+                    <label>Model API key</label>
+                    <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
+                    <config_path>typesense_products/embeddings/embeddings_api_key</config_path>
+                    <comment>Embedded Model API key</comment>
+                </field>
+                <field id="embedding_fields" translate="label comment" type="text" sortOrder="230" showInDefault="1"
+                       showInWebsite="1" showInStore="1">
+                    <label>Embedding fields</label>
+                    <frontend_model>Monogo\TypesenseCatalogProducts\Model\Config\Source\Embeddings</frontend_model>
+                    <backend_model>Monogo\TypesenseCatalogProducts\Model\Config\Backend\Embeddings</backend_model>
                 </field>
             </group>
         </section>
