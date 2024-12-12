@@ -17,6 +17,11 @@ class ConfigService extends CoreConfigService
     const TYPESENSE_PRODUCTS_INDEX_ALL = 'typesense_products/settings/index_all';
     const TYPESENSE_PRODUCTS_CUSTOMER_GROUPS_ENABLE = 'typesense_products/settings/customer_groups_enable';
     const TYPESENSE_PRODUCTS_SHOW_OUT_OF_STOCK = 'cataloginventory/options/index_child';
+    const TYPESENSE_PRODUCTS_EMBEDDINGS_ENABLE = 'typesense_products/embeddings/enable_embeddings';
+    const TYPESENSE_PRODUCTS_EMBEDDINGS_ENABLE_CHILDREN = 'typesense_products/embeddings/enable_embeddings_children';
+    const TYPESENSE_PRODUCTS_EMBEDDINGS_MODEL_NAME = 'typesense_products/embeddings/embeddings_model_name';
+    const TYPESENSE_PRODUCTS_EMBEDDINGS_API_KEY = 'typesense_products/embeddings/embeddings_api_key';
+    const TYPESENSE_PRODUCTS_EMBEDDINGS_FIELDS = 'typesense_products/embeddings/embedding_fields';
 
     /**
      * @param int|null $storeId
@@ -81,6 +86,80 @@ class ConfigService extends CoreConfigService
             ScopeConfig::SCOPE_STORE,
             $storeId
         );
+    }
+
+    /**
+     * @param $storeId
+     * @return bool
+     */
+    public function isEmbeddingsEnabled($storeId = null): bool
+    {
+        return $this->scopeConfig->getValue(
+                self::TYPESENSE_PRODUCTS_EMBEDDINGS_ENABLE,
+                ScopeConfig::SCOPE_STORE,
+                $storeId
+            ) && !empty($this->getEmbeddingsApiKey($storeId)) && !empty($this->getEmbeddingsModelName($storeId)) && !empty($this->getEmbeddingsFields($storeId));
+    }
+
+    /**
+     * @param $storeId
+     * @return bool
+     */
+    public function isEmbeddingsEnabledForChildren($storeId = null): bool
+    {
+        return (bool)$this->scopeConfig->getValue(
+            self::TYPESENSE_PRODUCTS_EMBEDDINGS_ENABLE_CHILDREN,
+            ScopeConfig::SCOPE_STORE,
+            $storeId
+        );
+    }
+
+    /**
+     * @param $storeId
+     * @return string|null
+     */
+    public function getEmbeddingsApiKey($storeId = null): ?string
+    {
+        $value = $this->scopeConfig->getValue(
+            self::TYPESENSE_PRODUCTS_EMBEDDINGS_API_KEY,
+            ScopeConfig::SCOPE_STORE,
+            $storeId
+        );
+        return $this->encryptor->decrypt($value);
+    }
+
+    /**
+     * @param $storeId
+     * @return string|null
+     */
+    public function getEmbeddingsModelName($storeId = null): ?string
+    {
+        return $this->scopeConfig->getValue(
+            self::TYPESENSE_PRODUCTS_EMBEDDINGS_MODEL_NAME,
+            ScopeConfig::SCOPE_STORE,
+            $storeId
+        );
+    }
+
+    /**
+     * @param $storeId
+     * @return array
+     */
+    public function getEmbeddingsFields($storeId = null): array
+    {
+        $attributes = [];
+        $attrs = $this->unserialize($this->scopeConfig->getValue(
+            self::TYPESENSE_PRODUCTS_EMBEDDINGS_FIELDS,
+            ScopeConfig::SCOPE_STORE,
+            $storeId
+        ));
+        if (is_array($attrs)) {
+            foreach ($attrs as $attr) {
+                $attributes[] = $attr['name'];
+            }
+            return $attributes;
+        }
+        return [];
     }
 
     /**

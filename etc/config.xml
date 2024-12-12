@@ -12,6 +12,7 @@
             <settings>
                 <enabled>1</enabled>
                 <index_all>0</index_all>
+                <enable_embeddings_children>0</enable_embeddings_children>
             </settings>
         </typesense_products>
     </default>

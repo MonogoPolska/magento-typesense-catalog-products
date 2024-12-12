@@ -222,6 +222,15 @@ class ProductData
             $subProducts = $typeInstance->getAssociatedProducts($product);
         }
 
+        $skuToLoad=[];
+        foreach ($subProducts as $subProduct){
+            $skuToLoad[]= $subProduct->getSku();
+        }
+
+        $collection = $this->productCollectionFactory->create();
+        $collection->addAttributeToSelect('*')
+            ->addAttributeToFilter('sku', ['in' =>$skuToLoad]);
+        $subProducts = $collection->getItems();
         $this->stockData->addStockDataToCollection($subProducts, $product->getStoreId());
 
         /**
@@ -234,7 +243,6 @@ class ProductData
                 unset($subProducts[$index]);
             }
         }
-
         return $subProducts;
     }
 

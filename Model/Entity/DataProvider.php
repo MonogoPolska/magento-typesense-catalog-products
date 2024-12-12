@@ -203,10 +203,9 @@ class DataProvider extends DataProviderCore
             foreach ($subProducts as $subProduct) {
                 $subProductIds[] = $subProduct->getId();
             }
-
             $this->productData->addCategoryData($product);
-
             $productObject = $this->getInitialDataModel($product, $subProductIds);
+
             $this->productData->getProductAttributes($product, $subProducts, $storeId, $productObject);
 
             $this->prepareContentData($product, $productObject);

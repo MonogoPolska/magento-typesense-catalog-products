@@ -19,6 +19,11 @@ class IndexManager extends IndexManagerCore
     protected ConfigService $configService;
 
     /**
+     * @var string
+     */
+    protected string $name = '';
+
+    /**
      * @param Client $client
      * @param LogService $logService
      * @param ConfigService $configService
@@ -38,6 +43,7 @@ class IndexManager extends IndexManagerCore
      */
     public function getIndexSchema(string $name): array
     {
+        $this->name = $name;
         return [
             'name' => $name,
             'fields' => $this->getFormattedFields(),
@@ -55,6 +61,23 @@ class IndexManager extends IndexManagerCore
         $fields = $this->getIndexFields();
         foreach ($fields as $field) {
             $formattedFields[] = $field;
+        }
+
+        if ($this->configService->isEmbeddingsEnabled()) {
+            if (!str_contains($this->name, 'children') || (str_contains($this->name, 'children') && $this->configService->isEmbeddingsEnabledForChildren())) {
+                $embeddingFields = [
+                    'name' => 'embedding',
+                    'type' => 'float[]',
+                    'embed' => [
+                        'from' => $this->configService->getEmbeddingsFields(),
+                        'model_config' => [
+                            'model_name' => $this->configService->getEmbeddingsModelName(),
+                            'api_key' => $this->configService->getEmbeddingsApiKey(),
+                        ],
+                    ],
+                ];
+                $formattedFields[] = $embeddingFields;
+            }
         }
         return $formattedFields;
     }

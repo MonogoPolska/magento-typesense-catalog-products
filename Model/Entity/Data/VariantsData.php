@@ -109,7 +109,14 @@ class VariantsData
         $this->variantCollection->addEavAttributes($attributes);
         $this->optionCollection->addProductId((int)$product->getData($this->getLinkField()));
         $this->context->getExtensionAttributes()->setStore($product->getStore());
-        $children = $this->variantCollection->getChildProductsByParentId((int)$product->getData($this->getLinkField()), $this->context);
+
+        $attributeCodes = [];
+        foreach ($this->optionCollection->getAttributes() as $productAttributes) {
+            foreach ($productAttributes as $attribute) {
+                $attributeCodes[] = $attribute['attribute_code'];
+            }
+        }
+        $children = $this->variantCollection->getChildProductsByParentId((int)$product->getData($this->getLinkField()), $this->context,$attributeCodes);
 
         $options = $this->optionCollection->getAttributesByProductId((int)$product->getData($this->getLinkField()));
 

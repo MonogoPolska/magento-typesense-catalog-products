@@ -85,6 +85,7 @@ class AttributeData
                 continue;
             }
 
+
             $productDataTmp = $this->addNullValue(
                 $productData,
                 $product,
@@ -141,8 +142,8 @@ class AttributeData
         $indexAsArray = str_contains($attribute['type'], '[]');
         $valueText = null;
 
-        $productData[$attribute['name'].'_label'] = $attributeResource->getStoreLabel($product->getStoreId());
-        $productData[$attribute['name'].'_position'] = $attributeResource->getPosition();
+        $productData[$attribute['name'] . '_label'] = $attributeResource->getStoreLabel($product->getStoreId());
+        $productData[$attribute['name'] . '_position'] = $attributeResource->getPosition();
 
         if ($indexAsArray) {
             $productData[$attribute['name'] . '_raw'] = [];
@@ -204,9 +205,8 @@ class AttributeData
     ): array
     {
         $attributeName = $attribute['name'];
-
-        $productData[$attribute['name'].'_label'] = $attributeResource->getStoreLabel($product->getStoreId());
-        $productData[$attribute['name'].'_position'] = $attributeResource->getPosition();
+        $productData[$attribute['name'] . '_label'] = $attributeResource->getStoreLabel($product->getStoreId());
+        $productData[$attribute['name'] . '_position'] = $attributeResource->getPosition();
 
         $values = [];
         $productData[$attribute['name'] . '_raw'] = [];
@@ -218,7 +218,10 @@ class AttributeData
             $values[] = $originalValue;
         }
 
+        $childrenStock = [];
         /** @var Product $subProduct */
+        $childrenInStockStatus = false;
+        $childrenInStockQty = 0;
         foreach ($subProducts as $subProduct) {
             $value = $subProduct->getData($attributeName);
             if ($value) {
@@ -227,10 +230,21 @@ class AttributeData
 
                 /** @var string|array $valueText */
                 $valueText = $subProduct->getAttributeText($attributeName);
-
                 $values = array_merge($values, $this->getValues($valueText, $subProduct, $attributeResource));
             }
+
+            $stock = $subProduct->getData('stock');
+            $childrenStock[] = array_merge(['entity_id' => $subProduct->getData('entity_id')], $stock);
+            if ($stock['is_in_stock'] == 1 && $stock['qty'] > 0) {
+                $childrenInStockStatus = true;
+                $childrenInStockQty += $stock['qty'];
+            }
         }
+        $productData['stock']['children'] = $childrenStock;
+        $productData['stock']['childrenSummary'] = [
+            'is_in_stock' => $childrenInStockStatus,
+            'overallQty' => $childrenInStockQty
+        ];
 
         if (is_array($values) && !empty($values)) {
             $productData[$attributeName] = array_values(array_unique($values));
