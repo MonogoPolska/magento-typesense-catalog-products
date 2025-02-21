@@ -111,7 +111,7 @@ class VariantsData
         $this->context->getExtensionAttributes()->setStore($product->getStore());
 
         $attributeCodes = [];
-        foreach ($this->optionCollection->getAttributesByProductId((int)$product->getData($this->getLinkField())) as $productAttributes) {
+        foreach ($this->optionCollection->getAttributesByProductId((int)$product->getData($this->getLinkField())) as $productAttribute) {
             $attributeCodes[] = $productAttribute['attribute_code'];
         }
         $children = $this->variantCollection->getChildProductsByParentId((int)$product->getData($this->getLinkField()), $this->context,$attributeCodes);
