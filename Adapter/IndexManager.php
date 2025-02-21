@@ -125,6 +125,7 @@ class IndexManager extends IndexManagerCore
             'upsell_products_ids' => ['name' => 'upsell_products_ids', 'type' => 'string[]', 'optional' => true, 'index' => false],
             'crossell_products_ids' => ['name' => 'crossell_products_ids', 'type' => 'string[]', 'optional' => true, 'index' => false],
             'final_price' => ['name' => 'final_price', 'type' => 'float', 'optional' => false, 'index' => true, 'sort' => true],
+            'currency' => ['name' => 'currency', 'type' => 'string', 'optional' => false, 'index' => false, 'sort' => false],
         ];
     }
 }
