@@ -3,10 +3,12 @@ declare(strict_types=1);
 
 namespace Monogo\TypesenseCatalogProducts\Model\Entity\Data;
 
+use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\ResourceModel\Product\Collection as ProductCollection;
 use Magento\CatalogInventory\Helper\Stock;
 use Magento\Framework\App\ResourceConnection;
+use Magento\Framework\EntityManager\MetadataPool;
 use Magento\InventoryCatalog\Model\GetStockIdForCurrentWebsite;
 use Magento\InventoryCatalogApi\Api\DefaultStockProviderInterface;
 use Magento\InventorySalesApi\Api\AreProductsSalableInterface;
@@ -45,9 +47,19 @@ class StockData
     private ResourceConnection $resourceConnection;
 
     /**
+     * @var MetadataPool
+     */
+    private MetadataPool $metadataPool;
+
+    /**
      * @var int|null
      */
     private ?int $stockId = null;
+
+    /**
+     * @var string
+     */
+    private string $linkField = "";
 
     /**
      * @param ConfigService $configService
@@ -56,6 +68,7 @@ class StockData
      * @param ResourceConnection $resourceConnection
      * @param GetStockIdForCurrentWebsite $getStockIdForCurrentWebsite
      * @param AreProductsSalableInterface $areProductsSalable
+     * @param MetadataPool $metadataPool
      */
     public function __construct(
         ConfigService                 $configService,
@@ -63,7 +76,8 @@ class StockData
         DefaultStockProviderInterface $defaultStockProvider,
         ResourceConnection            $resourceConnection,
         GetStockIdForCurrentWebsite   $getStockIdForCurrentWebsite,
-        AreProductsSalableInterface   $areProductsSalable
+        AreProductsSalableInterface   $areProductsSalable,
+        MetadataPool                  $metadataPool
     )
     {
         $this->configService = $configService;
@@ -72,6 +86,7 @@ class StockData
         $this->resourceConnection = $resourceConnection;
         $this->getStockIdForCurrentWebsite = $getStockIdForCurrentWebsite;
         $this->areProductsSalable = $areProductsSalable;
+        $this->metadataPool = $metadataPool;
     }
 
     /**
@@ -179,11 +194,16 @@ class StockData
             ->columns([
                 'catalog_product_entity.sku',
                 'css.stock_status',
-                'quantity' => 'css.qty',
                 'csi.min_qty',
                 'csi.is_in_stock',
                 'csi.max_sale_qty',
-                'stock_qty' => 'csi.qty'
+                'stock_qty' => 'csi.qty',
+                'quantity' => new \Zend_Db_Expr('IF(catalog_product_entity.type_id = "configurable", (
+                    SELECT SUM(child_csi.qty)
+                    FROM catalog_product_relation AS cpr
+                    JOIN cataloginventory_stock_item AS child_csi ON child_csi.product_id = cpr.child_id
+                    WHERE cpr.parent_id = catalog_product_entity.' .  $this->getLinkField() . '
+                ), css.qty)')
             ])
             ->joinLeft(
                 'inventory_source_item',
@@ -215,20 +235,59 @@ class StockData
         $connection = $this->resourceConnection->getConnection();
         $result = [];
 
+        $subSelect = $connection->select()->reset()
+            ->from(['cpe_parent' => 'catalog_product_entity'], null)
+            ->columns(['quantity' => 'SUM(ir.quantity)'])
+            ->join(
+                ['cpr' => 'catalog_product_relation'],
+                'cpe_parent.' . $this->getLinkField() . ' = cpr.parent_id', []
+            )
+            ->join(
+                ['child_cpe' => 'catalog_product_entity'],
+                'cpr.child_id = child_cpe.entity_id', []
+            )
+            ->join(
+                ['ir' => 'inventory_reservation'],
+                'child_cpe.sku = ir.sku', []
+            )
+            ->where('cpe_parent.sku = cpe.sku')
+            ->where('ir.stock_id = ' . $defaultStockId);
+
+        $subSelect = '(' . $subSelect->__toString() . ')';
+
         $select = $connection->select()->reset()
-            ->from('inventory_reservation', null)
+            ->from(['cpe' => 'catalog_product_entity'], null)
             ->columns([
-                'inventory_reservation.sku',
-                'quantity' => 'SUM(inventory_reservation.quantity)'
+                'sku' => 'cpe.sku',
+                'quantity' => new \Zend_Db_Expr('IF(cpe.type_id = "configurable", (
+                        ' . $subSelect . '
+					), SUM(ir.quantity))')
             ])
-            ->where('inventory_reservation.sku IN (?)', $listSku)
-            ->where('inventory_reservation.stock_id = ?', $defaultStockId)
-            ->group('inventory_reservation.sku');
+            ->joinLeft(
+                ['ir' => 'inventory_reservation'],
+                'cpe.sku = ir.sku',
+                []
+            )
+            ->where('cpe.sku IN (?)', $listSku)
+            ->group('cpe.sku')
+            ->group('cpe.type_id');
 
         foreach ($connection->fetchPairs($select) as $sku => $quantity) {
             $result[$sku] = $quantity;
         }
         return $result;
+    }
+
+    /**
+     * @return string
+     * @throws \Exception
+     */
+    public function getLinkField(): string
+    {
+        if (empty($this->linkField)) {
+            $this->linkField = $this->metadataPool->getMetadata(ProductInterface::class)->getLinkField();
+        }
+        return $this->linkField;
     }
 
     /**

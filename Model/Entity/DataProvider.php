@@ -268,7 +268,8 @@ class DataProvider extends DataProviderCore
             'price' => $product->getPriceInfo()->getPrice(RegularPrice::PRICE_CODE)->getValue(),
             'final_price' => $product->getPriceInfo()->getPrice(FinalPrice::PRICE_CODE)->getValue(),
             'special_price' => $product->getPriceInfo()->getPrice(SpecialPrice::PRICE_CODE)->getValue(),
-            'currency' => $product->getStore()->getCurrentCurrencyCode()
+            'currency' => $product->getStore()->getCurrentCurrencyCode(),
+            'salable_qty' => $product->getStock()['salable_qty']
         ];
     }
 

@@ -1,4 +1,8 @@
 # CHANGE LOG
+## [1.0.3] - 2025-03-07
+- Added sortable field salable_qty
+- Changed stock counting logic for configurable products
+
 ## [1.0.2] - 2025-02-21
 - Fixed issue with missing method for magento versions before 2.4.7
 
