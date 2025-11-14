@@ -1,4 +1,8 @@
 # CHANGE LOG
+
+## [1.0.4] - 2025-11-14
+- Fix for YesNo class 
+
 ## [1.0.3] - 2025-03-07
 - Added sortable field salable_qty
 - Changed stock counting logic for configurable products
