@@ -166,7 +166,7 @@ class DataProvider extends DataProviderCore
      * @return ProductCollection|null
      * @throws LocalizedException
      */
-    public function getCollection(?int $storeId, array $dataIds = null): ?ProductCollection
+    public function getCollection(?int $storeId, ?array $dataIds = null): ?ProductCollection
     {
         $productCollection = $this->productData->getProductCollection($storeId, $dataIds, true, false);
         $this->optionsData->setProducts($productCollection);
@@ -180,7 +180,7 @@ class DataProvider extends DataProviderCore
      * @return array
      * @throws Exception
      */
-    public function getData(?int $storeId, array $dataIds = null): array
+    public function getData(?int $storeId, ?array $dataIds = null): array
     {
         if ($dataIds) {
             $dataIds = array_unique(array_merge($dataIds, $this->productData->getParentProductIds($dataIds)));
