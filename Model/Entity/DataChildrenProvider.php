@@ -109,7 +109,7 @@ class DataChildrenProvider extends DataProvider
      * @return ProductCollection
      * @throws LocalizedException
      */
-    public function getCollection(?int $storeId, array $dataIds = null): ?ProductCollection
+    public function getCollection(?int $storeId, ?array $dataIds = null): ?ProductCollection
     {
         if ($this->configService->getIndexAll($storeId)) {
             return $this->productData->getProductCollection($storeId, $dataIds, true, true);
