@@ -84,14 +84,7 @@ class ImageData extends Image
                     if (!empty($image->getFile())) {
                         foreach ($image->getTypes() as $type) {
                             $imageUrl = $product->getMediaConfig()->getMediaUrl($image->getFile());
-                            if ((empty($imageUrl) || $imageUrl == 'no_selection') &&
-                                $product->getTypeId() == ProductTypeConfigurable::TYPE_CODE) {
-                                $configurableImages = $this->getConfigurableProductImage($product, $type);
-                                $imageUrl = !empty($configurableImages) ? $configurableImages : null;
-                            }
-                            if (is_array($imageUrl)) {
-                                $mediaGallery[$type]['children'] = $imageUrl;
-                            } else {
+                            if (!empty($imageUrl) && $imageUrl !== 'no_selection') {
                                 $mediaGallery[$type] = $imageUrl;
                             }
                         }
@@ -157,33 +150,15 @@ class ImageData extends Image
     {
         $mediaGalleryEntries = [];
 
-        if ($product->getTypeId() == 'configurable') {
-            $usedProducts = $product->getTypeInstance()->getUsedProductCollection($product)->getItems();
-            foreach ($usedProducts as $usedProduct) {
-//                if (in_array($usedProduct->getId(), $availableSelectionProducts)) {
-                    foreach ($usedProduct->getMediaGalleryEntries() ?? [] as $key => $entry) {
-                        $entry->setFile($usedProduct->getMediaConfig()->getMediaUrl($entry->getFile()));
-                        $entryData = $entry->getData();
-                        $initialIndex = $usedProduct->getId() . '_' . $key;
-                        $index = $this->prepareIndex($entryData, $initialIndex);
-                        $mediaGalleryEntries[$index] = $entryData;
-                        if ($entry->getExtensionAttributes() && $entry->getExtensionAttributes()->getVideoContent()) {
-                            $mediaGalleryEntries[$index]['video_content']
-                                = $entry->getExtensionAttributes()->getVideoContent()->getData();
-                        }
-                    }
-//                }
-            }
-        } else {
-            foreach ($product->getMediaGalleryEntries() ?? [] as $key => $entry) {
-                $entry->setFile($product->getMediaConfig()->getMediaUrl($entry->getFile()));
-                $mediaGalleryEntries[$key] = $entry->getData();
-                if ($entry->getExtensionAttributes() && $entry->getExtensionAttributes()->getVideoContent()) {
-                    $mediaGalleryEntries[$key]['video_content']
-                        = $entry->getExtensionAttributes()->getVideoContent()->getData();
-                }
+        foreach ($product->getMediaGalleryEntries() ?? [] as $key => $entry) {
+            $entry->setFile($product->getMediaConfig()->getMediaUrl($entry->getFile()));
+            $mediaGalleryEntries[$key] = $entry->getData();
+            if ($entry->getExtensionAttributes() && $entry->getExtensionAttributes()->getVideoContent()) {
+                $mediaGalleryEntries[$key]['video_content']
+                    = $entry->getExtensionAttributes()->getVideoContent()->getData();
             }
         }
+
         return $mediaGalleryEntries;
     }
 
