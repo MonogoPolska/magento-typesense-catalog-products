@@ -228,8 +228,9 @@ class ProductData
         }
 
         $collection = $this->productCollectionFactory->create();
-        $collection->addAttributeToSelect('*')
-            ->addAttributeToFilter('sku', ['in' =>$skuToLoad]);
+        $collection->setStoreId($storeId)
+            ->addAttributeToSelect('*')
+            ->addAttributeToFilter('sku', ['in' => $skuToLoad]);
         $subProducts = $collection->getItems();
         $this->stockData->addStockDataToCollection($subProducts, $product->getStoreId());
 

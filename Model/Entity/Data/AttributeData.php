@@ -66,6 +66,8 @@ class AttributeData
             $attributeResource = $attributeResource->setData('store_id', $product->getStoreId());
 
             $value = $product->getData($attributeName);
+            $type = $product->getTypeId();
+            $isComposite = in_array($type, ['configurable', 'grouped', 'bundle'], true);
 
             if ($value !== null) {
                 $productDataTmp = $this->addNonNullValue(
@@ -75,16 +77,14 @@ class AttributeData
                     $attribute,
                     $attributeResource
                 );
-                if (!in_array($attributeName, $this->attributesToIndexAsArray, true)) {
+                if (!$isComposite && !in_array($attributeName, $this->attributesToIndexAsArray, true)) {
                     continue;
                 }
             }
 
-            $type = $product->getTypeId();
-            if ($type !== 'configurable' && $type !== 'grouped' && $type !== 'bundle') {
+            if (!$isComposite) {
                 continue;
             }
-
 
             $productDataTmp = $this->addNullValue(
                 $productData,
