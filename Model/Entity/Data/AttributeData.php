@@ -98,7 +98,59 @@ class AttributeData
         }
         $productData = array_merge($productData, $productDataTmp);
 
+        foreach ($additionalAttributes as $attribute) {
+            $attributeName = $attribute['name'];
+            if (isset($productData[$attributeName])) {
+                $productData[$attributeName] = $this->normalizeValueForSchema(
+                    $productData[$attributeName],
+                    $attribute['type']
+                );
+            }
+        }
+
         return $productData;
+    }
+
+    /**
+     * @param mixed $value
+     * @param string $schemaType
+     * @return mixed
+     */
+    protected function normalizeValueForSchema(mixed $value, string $schemaType): mixed
+    {
+        $isArrayType = str_contains($schemaType, '[]');
+
+        if ($isArrayType && !is_array($value)) {
+            return $value !== null && $value !== '' ? [$value] : [];
+        }
+
+        if (!$isArrayType && is_array($value)) {
+            $value = array_filter($value, fn($v) => $v !== null && $v !== '');
+            if (empty($value)) {
+                return $this->getEmptyValueForType($schemaType);
+            }
+            if (str_contains($schemaType, 'string')) {
+                return implode(', ', array_unique($value));
+            }
+            return reset($value);
+        }
+
+        return $value;
+    }
+
+    /**
+     * @param string $schemaType
+     * @return mixed
+     */
+    private function getEmptyValueForType(string $schemaType): mixed
+    {
+        if (str_contains($schemaType, 'int') || str_contains($schemaType, 'float')) {
+            return 0;
+        }
+        if (str_contains($schemaType, 'bool')) {
+            return false;
+        }
+        return '';
     }
 
     /**
