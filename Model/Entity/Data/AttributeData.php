@@ -130,9 +130,6 @@ class AttributeData
             if (empty($value)) {
                 return $this->getEmptyValueForType($schemaType);
             }
-            if (str_contains($schemaType, 'string')) {
-                return implode(', ', array_unique($value));
-            }
             return reset($value);
         }
 
