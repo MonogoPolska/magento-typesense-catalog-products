@@ -68,6 +68,7 @@ class AttributeData
             $value = $product->getData($attributeName);
             $type = $product->getTypeId();
             $isComposite = in_array($type, ['configurable', 'grouped', 'bundle'], true);
+            $isArrayType = str_contains($attribute['type'], '[]');
 
             if ($value !== null) {
                 $productDataTmp = $this->addNonNullValue(
@@ -77,7 +78,7 @@ class AttributeData
                     $attribute,
                     $attributeResource
                 );
-                if (!$isComposite && !in_array($attributeName, $this->attributesToIndexAsArray, true)) {
+                if (!$isComposite || (!$isArrayType && !in_array($attributeName, $this->attributesToIndexAsArray, true))) {
                     continue;
                 }
             }
@@ -128,9 +129,6 @@ class AttributeData
             $value = array_filter($value, fn($v) => $v !== null && $v !== '');
             if (empty($value)) {
                 return $this->getEmptyValueForType($schemaType);
-            }
-            if (str_contains($schemaType, 'string')) {
-                return implode(', ', array_unique($value));
             }
             return reset($value);
         }
