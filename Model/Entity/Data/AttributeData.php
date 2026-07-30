@@ -18,6 +18,19 @@ class AttributeData
     ];
 
     /**
+     * @var SwatchData
+     */
+    protected SwatchData $swatchData;
+
+    /**
+     * @param SwatchData $swatchData
+     */
+    public function __construct(SwatchData $swatchData)
+    {
+        $this->swatchData = $swatchData;
+    }
+
+    /**
      * @param ProductCollection $products
      * @return void
      */
@@ -216,6 +229,13 @@ class AttributeData
         } else {
             $productData[$attribute['name'] . '_raw'] = $product->getData($attribute['name']);
         }
+
+        $this->swatchData->addSwatchData(
+            $productData,
+            $attribute,
+            $attributeResource,
+            $product->getData($attribute['name'])
+        );
 
         if ($indexAsArray) {
             if ($value) {
