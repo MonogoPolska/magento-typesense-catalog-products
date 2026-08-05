@@ -14,6 +14,10 @@
                 <index_all>0</index_all>
                 <enable_embeddings_children>0</enable_embeddings_children>
             </settings>
+            <indexer_filters>
+                <enabled>0</enabled>
+                <include_parents>1</include_parents>
+            </indexer_filters>
         </typesense_products>
     </default>
 </config>

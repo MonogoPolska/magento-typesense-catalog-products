@@ -20,6 +20,7 @@ use Monogo\TypesenseCatalogProducts\Model\Entity\Data\RelatedData;
 use Monogo\TypesenseCatalogProducts\Model\Entity\Data\StockData;
 use Monogo\TypesenseCatalogProducts\Model\Entity\Data\VariantsData;
 use Monogo\TypesenseCatalogProducts\Services\ConfigService;
+use Monogo\TypesenseCatalogProducts\Services\IndexerFilterService;
 
 class DataChildrenProvider extends DataProvider
 {
@@ -112,7 +113,13 @@ class DataChildrenProvider extends DataProvider
     public function getCollection(?int $storeId, ?array $dataIds = null): ?ProductCollection
     {
         if ($this->configService->getIndexAll($storeId)) {
-            return $this->productData->getProductCollection($storeId, $dataIds, true, true);
+            return $this->productData->getProductCollection(
+                $storeId,
+                $dataIds,
+                true,
+                true,
+                IndexerFilterService::FILTER_TYPE_CHILDREN
+            );
         }
         return null;
     }

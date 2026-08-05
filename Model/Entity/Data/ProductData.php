@@ -19,6 +19,7 @@ use Monogo\TypesenseCatalogProducts\Exception\ProductDisabledException;
 use Monogo\TypesenseCatalogProducts\Exception\ProductNotVisibleException;
 use Monogo\TypesenseCatalogProducts\Exception\ProductOutOfStockException;
 use Monogo\TypesenseCatalogProducts\Services\ConfigService;
+use Monogo\TypesenseCatalogProducts\Services\IndexerFilterService;
 
 class ProductData
 {
@@ -83,6 +84,11 @@ class ProductData
     protected array $compositeTypes;
 
     /**
+     * @var IndexerFilterService
+     */
+    protected IndexerFilterService $indexerFilterService;
+
+    /**
      * @param ConfigService $configService
      * @param ManagerInterface $eventManager
      * @param Visibility $visibility
@@ -93,6 +99,7 @@ class ProductData
      * @param Type $productType
      * @param ProductCollectionFactory $productCollectionFactory
      * @param ImageData $imageData
+     * @param IndexerFilterService $indexerFilterService
      */
     public function __construct(
         ConfigService            $configService,
@@ -104,9 +111,11 @@ class ProductData
         StockData                $stockData,
         Type                     $productType,
         ProductCollectionFactory $productCollectionFactory,
-        ImageData                $imageData
+        ImageData                $imageData,
+        IndexerFilterService     $indexerFilterService
     )
     {
+        $this->indexerFilterService = $indexerFilterService;
         $this->configService = $configService;
         $this->eventManager = $eventManager;
         $this->visibility = $visibility;
@@ -124,14 +133,17 @@ class ProductData
      * @param array|null $productIds
      * @param bool $onlyEnabled
      * @param bool $includeNotVisibleIndividually
+     * @param string $filterType
      * @return ProductCollection
      * @throws LocalizedException
+     * @throws \Exception
      */
     public function getProductCollection(
         ?int   $storeId,
         ?array $productIds = null,
         bool   $onlyEnabled = true,
-        bool   $includeNotVisibleIndividually = false
+        bool   $includeNotVisibleIndividually = false,
+        string $filterType = IndexerFilterService::FILTER_TYPE_PRODUCTS
     ): ProductCollection
     {
         $productCollection = $this->productCollectionFactory->create();
@@ -159,6 +171,7 @@ class ProductData
         }
 
         $this->attributeData->addMandatoryAttributes($products);
+        $this->indexerFilterService->apply($products, $storeId, $filterType);
         $this->stockData->addStockDataToCollection($products, $storeId);
         $this->imageData->addImageDataToCollection($products);
 

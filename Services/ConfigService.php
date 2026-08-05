@@ -24,6 +24,17 @@ class ConfigService extends CoreConfigService
     const TYPESENSE_PRODUCTS_EMBEDDINGS_FIELDS = 'typesense_products/embeddings/embedding_fields';
 
     /**
+     * Indexer filters
+     */
+    const TYPESENSE_PRODUCTS_FILTERS_GROUP = 'indexer_filters';
+    const TYPESENSE_PRODUCTS_FILTERS_FIELD_CONDITIONS = 'conditions';
+    const TYPESENSE_PRODUCTS_FILTERS_FIELD_CHILDREN_CONDITIONS = 'children_conditions';
+    const TYPESENSE_PRODUCTS_FILTERS_ENABLED = 'typesense_products/indexer_filters/enabled';
+    const TYPESENSE_PRODUCTS_FILTERS_CONDITIONS = 'typesense_products/indexer_filters/conditions';
+    const TYPESENSE_PRODUCTS_FILTERS_CHILDREN_CONDITIONS = 'typesense_products/indexer_filters/children_conditions';
+    const TYPESENSE_PRODUCTS_FILTERS_INCLUDE_PARENTS = 'typesense_products/indexer_filters/include_parents';
+
+    /**
      * @param int|null $storeId
      * @return bool|null
      */
@@ -160,6 +171,76 @@ class ConfigService extends CoreConfigService
             return $attributes;
         }
         return [];
+    }
+
+    /**
+     * @param int|null $storeId
+     * @return bool
+     */
+    public function isIndexerFiltersEnabled(?int $storeId = null): bool
+    {
+        return $this->scopeConfig->isSetFlag(
+            self::TYPESENSE_PRODUCTS_FILTERS_ENABLED,
+            ScopeConfig::SCOPE_STORE,
+            $storeId
+        );
+    }
+
+    /**
+     * @param int|null $storeId
+     * @return bool
+     */
+    public function includeParentsOfMatchingChildren(?int $storeId = null): bool
+    {
+        return $this->scopeConfig->isSetFlag(
+            self::TYPESENSE_PRODUCTS_FILTERS_INCLUDE_PARENTS,
+            ScopeConfig::SCOPE_STORE,
+            $storeId
+        );
+    }
+
+    /**
+     * @param int|null $storeId
+     * @return array
+     */
+    public function getIndexerFilterConditions(?int $storeId = null): array
+    {
+        return $this->getConditions(self::TYPESENSE_PRODUCTS_FILTERS_CONDITIONS, $storeId);
+    }
+
+    /**
+     * @param int|null $storeId
+     * @return array
+     */
+    public function getIndexerFilterChildrenConditions(?int $storeId = null): array
+    {
+        return $this->getConditions(self::TYPESENSE_PRODUCTS_FILTERS_CHILDREN_CONDITIONS, $storeId);
+    }
+
+    /**
+     * Returns the flat conditions tree in the format expected by Magento\Rule\Model\AbstractModel::loadPost()
+     *
+     * @param string $path
+     * @param int|null $storeId
+     * @return array
+     */
+    protected function getConditions(string $path, ?int $storeId = null): array
+    {
+        $value = $this->unserialize($this->scopeConfig->getValue(
+            $path,
+            ScopeConfig::SCOPE_STORE,
+            $storeId
+        ));
+
+        if (!is_array($value) || empty($value['conditions']) || !is_array($value['conditions'])) {
+            return [];
+        }
+
+        if (count($value['conditions']) < 2) {
+            return [];
+        }
+
+        return ['conditions' => $value['conditions']];
     }
 
     /**
