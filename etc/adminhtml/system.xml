@@ -70,7 +70,11 @@
                     <comment>
                         <![CDATA[
                         Keep configurable, bundle and grouped products whose child products match the conditions. <br />
-                        Needed when filtering by attributes that are only set on simple products, for example color or size.
+                        Needed when filtering by attributes that are only set on simple products, for example color or size. <br />
+                        A composite product is kept when it matches on its own values <b>or</b> when at least one of its
+                        children matches, so a single matching child is enough even if the parent itself does not match.
+                        Set this to No to judge composite products only by their own values, which matters for conditions
+                        the parent carries itself, such as stock status.
                         ]]>
                     </comment>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>

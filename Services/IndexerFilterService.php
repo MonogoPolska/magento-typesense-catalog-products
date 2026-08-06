@@ -95,6 +95,10 @@ class IndexerFilterService
         string            $filterType = self::FILTER_TYPE_PRODUCTS
     ): void
     {
+        if (!$this->configService->isIndexerFiltersEnabled($storeId)) {
+            return;
+        }
+
         $conditions = $this->getConditions($storeId, $filterType);
 
         if ($conditions === null) {
@@ -133,10 +137,6 @@ class IndexerFilterService
      */
     private function getConditions(?int $storeId, string $filterType): ?Combine
     {
-        if (!$this->configService->isIndexerFiltersEnabled($storeId)) {
-            return null;
-        }
-
         $conditionsData = $filterType === self::FILTER_TYPE_CHILDREN
             ? $this->configService->getIndexerFilterChildrenConditions($storeId)
             : $this->configService->getIndexerFilterConditions($storeId);

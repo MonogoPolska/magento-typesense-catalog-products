@@ -16,7 +16,7 @@ class ConfigService extends CoreConfigService
     const TYPESENSE_PRODUCTS_SCHEMA = 'typesense_products/settings/schema';
     const TYPESENSE_PRODUCTS_INDEX_ALL = 'typesense_products/settings/index_all';
     const TYPESENSE_PRODUCTS_CUSTOMER_GROUPS_ENABLE = 'typesense_products/settings/customer_groups_enable';
-    const TYPESENSE_PRODUCTS_SHOW_OUT_OF_STOCK = 'cataloginventory/options/index_child';
+    const TYPESENSE_PRODUCTS_SHOW_OUT_OF_STOCK = 'cataloginventory/options/show_out_of_stock';
     const TYPESENSE_PRODUCTS_EMBEDDINGS_ENABLE = 'typesense_products/embeddings/enable_embeddings';
     const TYPESENSE_PRODUCTS_EMBEDDINGS_ENABLE_CHILDREN = 'typesense_products/embeddings/enable_embeddings_children';
     const TYPESENSE_PRODUCTS_EMBEDDINGS_MODEL_NAME = 'typesense_products/embeddings/embeddings_model_name';

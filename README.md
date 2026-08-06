@@ -45,6 +45,17 @@ Settings:
 Conditions are store view scoped. Saving them invalidates both product indexers, and products that stop matching are
 removed from the Typesense collection on the next reindex.
 
+### How parents are matched
+
+With `Include parents of matching children` set to Yes a composite product is kept when it matches on its own values
+**or** when at least one of its children matches. The two branches are combined with `OR`, so one matching child is
+enough and the parent's own values are never able to exclude it.
+
+That is what makes attribute filters usable, because a configurable carries no `color` or `size` of its own. It also
+means conditions the parent does carry cannot veto the result. A configurable that is out of stock stays in the index
+as long as one of its variants is in stock, even with a condition such as `Stock Status is In Stock`. Set the option to
+No to judge composite products only by their own values.
+
 ## Indexers
 
 | Indexer                                                | Description                                                                                                                      |
