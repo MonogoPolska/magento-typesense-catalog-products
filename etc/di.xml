@@ -29,6 +29,14 @@
         <plugin name="typesenseProducts" type="Monogo\TypesenseCatalogProducts\Plugin\ProductPlugin"/>
     </type>
 
+    <type name="Monogo\TypesenseCatalogProducts\Model\Rule\Condition\Combine">
+        <arguments>
+            <argument name="excludedAttributes" xsi:type="array">
+                <item name="quantity_and_stock_status" xsi:type="string">quantity_and_stock_status</item>
+            </argument>
+        </arguments>
+    </type>
+
     <type name="Magento\CatalogGraphQl\Model\Resolver\Product\Price\ProviderPool">
         <arguments>
             <argument name="providers" xsi:type="array">

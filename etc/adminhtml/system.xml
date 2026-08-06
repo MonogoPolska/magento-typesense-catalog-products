@@ -39,6 +39,60 @@
                     </comment>
                 </field>
             </group>
+            <group id="indexer_filters" sortOrder="15" showInWebsite="1" showInStore="1" showInDefault="1"
+                   translate="label">
+                <label>Indexer Filters</label>
+                <comment>
+                    <![CDATA[
+                    Restrict the product collection processed by the Typesense indexers. <br />
+                    Only products matching the conditions below are indexed. An empty condition tree indexes the whole catalog.
+                    ]]>
+                </comment>
+                <field id="enabled" type="select" sortOrder="10" showInWebsite="1" showInStore="1" showInDefault="1"
+                       translate="label">
+                    <label>Enabled</label>
+                    <comment>Disable to index the whole catalog without losing the configured conditions</comment>
+                    <source_model>Magento\Config\Model\Config\Source\Enabledisable</source_model>
+                </field>
+                <field id="conditions" translate="label comment" type="text" sortOrder="20" showInDefault="1"
+                       showInWebsite="1" showInStore="1">
+                    <label>Product index conditions</label>
+                    <frontend_model>Monogo\TypesenseCatalogProducts\Block\Adminhtml\System\Config\Form\Field\Conditions</frontend_model>
+                    <backend_model>Monogo\TypesenseCatalogProducts\Model\Config\Backend\Conditions</backend_model>
+                    <comment>Conditions applied to the Typesense Catalog Products indexer</comment>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>
+                <field id="include_parents" type="select" sortOrder="30" showInWebsite="1" showInStore="1"
+                       showInDefault="1" translate="label">
+                    <label>Include parents of matching children</label>
+                    <comment>
+                        <![CDATA[
+                        Keep configurable, bundle and grouped products whose child products match the conditions. <br />
+                        Needed when filtering by attributes that are only set on simple products, for example color or size. <br />
+                        A composite product is kept when it matches on its own values <b>or</b> when at least one of its
+                        children matches, so a single matching child is enough even if the parent itself does not match.
+                        Set this to No to judge composite products only by their own values, which matters for conditions
+                        the parent carries itself, such as stock status.
+                        ]]>
+                    </comment>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>
+                <field id="children_conditions" translate="label comment" type="text" sortOrder="40" showInDefault="1"
+                       showInWebsite="1" showInStore="1">
+                    <label>Children index conditions</label>
+                    <frontend_model>Monogo\TypesenseCatalogProducts\Block\Adminhtml\System\Config\Form\Field\Conditions</frontend_model>
+                    <backend_model>Monogo\TypesenseCatalogProducts\Model\Config\Backend\Conditions</backend_model>
+                    <comment>Conditions applied to the Typesense Catalog Children Products indexer</comment>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>
+            </group>
             <group id="embeddings" sortOrder="20" showInWebsite="1" showInStore="1" showInDefault="1" translate="label">
                 <label>Embeddings</label>
                 <field id="enable_embeddings" type="select" sortOrder="200" showInWebsite="1" showInStore="1" showInDefault="1"

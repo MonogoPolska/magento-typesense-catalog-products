@@ -3,6 +3,8 @@
         xsi:noNamespaceSchemaLocation="urn:magento:framework:Module/etc/module.xsd">
     <module name="Monogo_TypesenseCatalogProducts">
         <sequence>
+            <module name="Magento_Rule"/>
+            <module name="Magento_CatalogInventory"/>
             <module name="Monogo_TypesenseCore"/>
             <module name="Monogo_TypesenseCatalogCategories"/>
         </sequence>

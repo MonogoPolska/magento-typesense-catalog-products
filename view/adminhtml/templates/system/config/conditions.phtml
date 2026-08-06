@@ -1,0 +1,34 @@
+<?php
+/** @var \Monogo\TypesenseCatalogProducts\Block\Adminhtml\System\Config\Form\Field\Conditions $block */
+/** @var \Magento\Framework\View\Helper\SecureHtmlRenderer $secureRenderer */
+
+$formId = $block->getJsFormObject();
+?>
+<div class="rule-tree" id="<?= $block->escapeHtmlAttr($formId) ?>">
+    <div class="rule-tree-wrapper">
+        <?= /* @noEscape */ $block->getInputHtml() ?>
+    </div>
+</div>
+<?php
+$readonly = $block->isDisabled() ? 'true' : 'false';
+$scriptString = <<<script
+require([
+    'jquery',
+    'Magento_Rule/rules',
+    'prototype'
+], function (jQuery, VarienRulesForm) {
+    var rulesForm = new VarienRulesForm(
+        '{$block->escapeJs($formId)}',
+        '{$block->escapeUrl($block->getNewChildUrl())}'
+    );
+
+    window['{$block->escapeJs($formId)}'] = rulesForm;
+
+    if ({$readonly}) {
+        rulesForm.setReadonly(true);
+        jQuery('#{$block->escapeJs($formId)}').find('input, select, textarea').prop('disabled', true);
+    }
+});
+script;
+?>
+<?= /* @noEscape */ $secureRenderer->renderTag('script', [], $scriptString, false) ?>
