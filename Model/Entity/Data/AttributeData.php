@@ -205,6 +205,7 @@ class AttributeData
         $indexAsArray = str_contains($attribute['type'], '[]');
         $valueText = null;
 
+        $attributeResource->unsetData('store_label');
         $productData[$attribute['name'] . '_label'] = $attributeResource->getStoreLabel($product->getStoreId());
         $productData[$attribute['name'] . '_position'] = $attributeResource->getPosition();
 
@@ -275,6 +276,7 @@ class AttributeData
     ): array
     {
         $attributeName = $attribute['name'];
+        $attributeResource->unsetData('store_label');
         $productData[$attribute['name'] . '_label'] = $attributeResource->getStoreLabel($product->getStoreId());
         $productData[$attribute['name'] . '_position'] = $attributeResource->getPosition();
 
